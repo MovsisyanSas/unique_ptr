@@ -7,11 +7,32 @@ public:
 	A(int b) : a(b){}
 };
 
-int main() {
-	uniqueptr<int> ptr{new int(120)};
-	uniqueptr<A> ptr2{new A(5)};
-	uniqueptr<int> ptr3{new int[4]};
+class Deleter {
+public:
+	template<typename T>
+	void operator()(T* ptr) {
+		std::cout << "del" << std::endl;
+		ptr = nullptr;
+		delete ptr;
+	}
+};
 
+class arr_Deleter {
+public:
+	template<typename T>
+	void operator()(T* ptr) {
+		std::cout << "arr_del" << std::endl;
+		ptr = nullptr;
+		delete[] ptr;
+	}
+};
+
+int main() {
+	uniqueptr<int, Deleter> ptr{new int(120)};
+	uniqueptr<A, Deleter> ptr2{new A(5)};
+	uniqueptr<int[],arr_Deleter> ptr3{new int[4]};
+
+	std::cout << *ptr << std::endl;
 	std::cout << *ptr << std::endl;
 	std::cout << ptr2->a << std::endl;
 	std::cout << *ptr3 << std::endl;
